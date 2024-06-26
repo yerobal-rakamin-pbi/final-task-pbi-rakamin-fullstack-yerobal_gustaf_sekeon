@@ -1,0 +1,15 @@
+{
+  "server": {
+    "port": "8080"
+  },
+  "sql": {
+    "host": "",
+    "port": "",
+    "database": "",
+    "user": "",
+    "password": ""
+  },
+  "storage": {
+    "bucketName": ""
+  }
+}
