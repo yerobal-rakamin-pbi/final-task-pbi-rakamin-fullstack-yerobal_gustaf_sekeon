@@ -8,6 +8,7 @@ type Application struct {
 
 type Server struct {
 	Port string `json:"port"`
+	Host string `json:"host"`
 }
 
 type SQL struct {

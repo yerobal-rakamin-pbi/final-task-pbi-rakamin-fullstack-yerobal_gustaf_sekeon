@@ -9,6 +9,7 @@ import (
 	"rakamin-final-task/helpers/configreader"
 	"rakamin-final-task/helpers/files"
 	"rakamin-final-task/helpers/log"
+	"rakamin-final-task/router"
 )
 
 const (
@@ -46,4 +47,10 @@ func main() {
 	}
 
 	db := database.Init(logger, dbConfig)
+
+	// Init Router
+	router := router.Init(config, logger, db)
+
+	router.Run()
+
 }
