@@ -52,5 +52,4 @@ func main() {
 	router := router.Init(config, logger, db)
 
 	router.Run()
-
 }
