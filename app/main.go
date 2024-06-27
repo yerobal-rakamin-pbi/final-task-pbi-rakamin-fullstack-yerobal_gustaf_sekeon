@@ -16,6 +16,18 @@ const (
 	configFile = "./config/config.json"
 )
 
+// @title Rakamin Backend
+// @description API for Rakamin Backend
+// @version 1.0
+
+// @contact.name 	Yerobal Gustaf Sekeon
+// @contact.email 	yerobalg@gmail.com
+
+// @securitydefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @value Bearer {token}
+
 func main() {
 	if !files.IsExist(configFile) {
 		// Build config

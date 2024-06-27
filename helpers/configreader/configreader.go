@@ -1,6 +1,8 @@
 package configreader
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -28,4 +30,6 @@ func (c *configreader) ReadConfig(configVar interface{}) {
 	if err := viper.Unmarshal(&configVar); err != nil {
 		panic(err)
 	}
+
+	fmt.Printf("Config: %+v\n", configVar)
 }

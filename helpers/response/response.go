@@ -29,7 +29,7 @@ func Init(log log.LogInterface) Interface {
 func (r *response) Success(c *gin.Context, message string, data interface{}, pg *PaginationParam) {
 	c.JSON(200, HTTPResponse{
 		Meta:       getRequestMetadata(c),
-		Message:    ResponseMessage{Title: "Sukses", Description: message},
+		Message:    ResponseMessage{Title: "Success", Description: message},
 		IsSuccess:  true,
 		Data:       data,
 		Pagination: pg,

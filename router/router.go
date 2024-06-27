@@ -71,7 +71,7 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 	r.setupSwagger()
 
 	// Global routes
-	r.http.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.http.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.http.GET("/ping", r.ping)
 
 
@@ -79,6 +79,12 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 	r.http.NoRoute(r.notFoundHandler)
 }
 
+// @Summary Health Check
+// @Description Check if the server is running
+// @Tags Server
+// @Produce json
+// @Success 200 {object} response.HTTPResponse{}
+// @Router /ping [GET]
 func (r router) ping(c *gin.Context) {
 	r.response.Success(c, "PONG!!!", nil, nil)
 }

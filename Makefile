@@ -5,7 +5,7 @@ swag-install:
 .PHONY: swag-init
 swag-init:
 	@/bin/rm -rf ./docs
-	@`go env GOPATH`/bin/swag init -g ./app/main.go -o ./docs --parseInternal
+	@swag init -g ./app/main.go -o ./docs --parseInternal
 
 .PHONY: build
 build:
