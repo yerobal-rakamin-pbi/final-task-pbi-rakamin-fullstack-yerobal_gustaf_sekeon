@@ -6,6 +6,9 @@
     "jwt": {
       "secret": "rahasia",
       "expSec": "604800"
+    },
+    "password": {
+      "saltRound": 10
     }
   },
   "sql": {

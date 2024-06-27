@@ -7,8 +7,8 @@ import (
 	"rakamin-final-task/helpers/errors"
 )
 
-type jwtLib struct{
-	expSec int64
+type jwtLib struct {
+	expSec    int64
 	secretKey string
 }
 
@@ -19,13 +19,13 @@ type Interface interface {
 
 func Init(expSec int64, secretKey string) Interface {
 	return &jwtLib{
-		expSec: expSec,
+		expSec:    expSec,
 		secretKey: secretKey,
 	}
 }
 
 func (j *jwtLib) GenerateToken(data interface{}) (string, error) {
-	
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"data": data,
 		"exp":  time.Now().Add(time.Second * time.Duration(j.expSec)).Unix(),
@@ -42,13 +42,18 @@ func (j *jwtLib) DecodeToken(token string) (map[string]interface{}, error) {
 		return nil, errors.Unauthorized("Invalid token")
 	}
 
+	if !decoded.Valid {
+		return nil, errors.Unauthorized("Invalid token")
+	}
+
 	claims, ok := decoded.Claims.(jwt.MapClaims)
+
+	if claims["exp"].(int64) < time.Now().Unix() {
+		return nil, errors.Unauthorized("Token expired")
+	}
 
 	if !ok {
 		return nil, errors.InternalServerError("Failed to decode token")
-	}
-	if !decoded.Valid {
-		return nil, errors.Unauthorized("Invalid token")
 	}
 
 	return claims, nil
