@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"rakamin-final-task/helpers/appcontext"
 	"rakamin-final-task/helpers/errors"
-	//"rakamin-final-task/src/models"
+	"rakamin-final-task/models"
 )
 
 func (r *router) BindParam(ctx *gin.Context, param interface{}) error {
@@ -23,10 +23,10 @@ func (r *router) BindBody(ctx *gin.Context, body interface{}) error {
 	return ctx.ShouldBindWith(body, binding.Default(ctx.Request.Method, ctx.ContentType()))
 }
 
-func (r *router) SuccessResponse(ctx *gin.Context, message string, data interface{}, pg *model.PaginationParam) {
-	ctx.JSON(200, model.HTTPResponse{
+func (r *router) SuccessResponse(ctx *gin.Context, message string, data interface{}, pg *models.PaginationParam) {
+	ctx.JSON(200, models.HTTPResponse{
 		Meta:       getRequestMetadata(ctx),
-		Message:    model.ResponseMessage{Title: "Sukses", Description: message},
+		Message:    models.ResponseMessage{Title: "Sukses", Description: message},
 		IsSuccess:  true,
 		Data:       data,
 		Pagination: pg,
@@ -35,9 +35,9 @@ func (r *router) SuccessResponse(ctx *gin.Context, message string, data interfac
 }
 
 func (r *router) CreatedResponse(ctx *gin.Context, message string, data interface{}) {
-	ctx.JSON(201, model.HTTPResponse{
+	ctx.JSON(201, models.HTTPResponse{
 		Meta: getRequestMetadata(ctx),
-		Message: model.ResponseMessage{
+		Message: models.ResponseMessage{
 			Title:       "Sukses",
 			Description: message,
 		},
@@ -48,9 +48,9 @@ func (r *router) CreatedResponse(ctx *gin.Context, message string, data interfac
 }
 
 func (r *router) ErrorResponse(ctx *gin.Context, err error) {
-	ctx.JSON(int(errors.GetCode(err)), model.HTTPResponse{
+	ctx.JSON(int(errors.GetCode(err)), models.HTTPResponse{
 		Meta: getRequestMetadata(ctx),
-		Message: model.ResponseMessage{
+		Message: models.ResponseMessage{
 			Title:       errors.GetType(err),
 			Description: errors.GetMessage(err),
 		},
@@ -60,8 +60,8 @@ func (r *router) ErrorResponse(ctx *gin.Context, err error) {
 	r.log.Error(ctx.Request.Context(), err.Error())
 }
 
-func getRequestMetadata(ctx *gin.Context) model.Meta {
-	meta := model.Meta{
+func getRequestMetadata(ctx *gin.Context) models.Meta {
+	meta := models.Meta{
 		RequestID: appcontext.GetRequestId(ctx.Request.Context()),
 		Time:      time.Now().Format(time.RFC3339),
 	}

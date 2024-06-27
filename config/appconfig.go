@@ -7,8 +7,9 @@ type Application struct {
 }
 
 type Server struct {
-	Port string `json:"port"`
-	Host string `json:"host"`
+	Port                 string `json:"port"`
+	Host                 string `json:"host"`
+	RequestTimeoutSecond int    `json:"requestTimeoutSecond"`
 }
 
 type SQL struct {
