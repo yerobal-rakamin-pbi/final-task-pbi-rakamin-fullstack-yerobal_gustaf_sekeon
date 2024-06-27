@@ -1,12 +1,16 @@
 {
   "server": {
     "port": "8080",
-    "host": "localhost",
-    "requestTimeoutSecond": 300
+    "host": "http://localhost",
+    "requestTimeoutSecond": 300,
+    "jwt": {
+      "secret": "j2x.3m7<k,4l35PT;=V-bSVR:N8@2<;w~)nN4;f*Smo",
+      "expSec": "604800"
+    }
   },
   "sql": {
-    "host": "",
-    "port": "",
+    "host": "127.0.0.1",
+    "port": "5432",
     "database": "",
     "user": "",
     "password": ""

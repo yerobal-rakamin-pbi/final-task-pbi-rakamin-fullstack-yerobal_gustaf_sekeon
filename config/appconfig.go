@@ -10,6 +10,12 @@ type Server struct {
 	Port                 string `json:"port"`
 	Host                 string `json:"host"`
 	RequestTimeoutSecond int    `json:"requestTimeoutSecond"`
+	JWT                  JWT    `json:"jwt"`
+}
+
+type JWT struct {
+	Secret string `json:"secret"`
+	ExpSec int64  `json:"expSec"`
 }
 
 type SQL struct {

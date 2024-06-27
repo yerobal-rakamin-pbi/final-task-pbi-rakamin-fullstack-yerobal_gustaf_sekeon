@@ -8,10 +8,13 @@ import (
 	"github.com/google/uuid"
 	"rakamin-final-task/config"
 	"rakamin-final-task/helpers/appcontext"
+	"rakamin-final-task/helpers/errors"
+	jwtLib "rakamin-final-task/helpers/jwt"
+	"rakamin-final-task/helpers/response"
 )
 
 const (
-	HeaderRequestId    = "x-request-id"
+	HeaderRequestId = "x-request-id"
 )
 
 type Interface interface {
@@ -22,13 +25,19 @@ type Interface interface {
 }
 
 type middleware struct {
-	config config.Application
-	http   *gin.Engine
+	config   config.Application
+	http     *gin.Engine
+	jwt      jwtLib.Interface
+	response response.Interface
 }
 
-func Init(http *gin.Engine) Interface {
+func Init(config config.Application, http *gin.Engine, response response.Interface) Interface {
+	jwt := jwtLib.Init(config.Server.JWT.ExpSec, config.Server.JWT.Secret)
+
 	return &middleware{
-		http: http,
+		http:   http,
+		config: config,
+		jwt:    jwt,
 	}
 }
 
@@ -42,11 +51,10 @@ func (m *middleware) SetTimeout(c *gin.Context) {
 	// Set the new context and replace the request context
 	ctx = appcontext.SetRequestStartTime(ctx, time.Now())
 	c.Request = c.Request.WithContext(ctx)
-
 	c.Next()
 }
 
-func (m *middleware) AddFieldsToContext(c *gin.Context) {
+func (m *middleware) AddFieldsToCtx(c *gin.Context) {
 	requestID := uuid.New().String()
 
 	ctx := c.Request.Context()
@@ -54,6 +62,7 @@ func (m *middleware) AddFieldsToContext(c *gin.Context) {
 	ctx = appcontext.SetUserAgent(ctx, c.Request.Header.Get(appcontext.HeaderUserAgent))
 	ctx = appcontext.SetDeviceType(ctx, c.Request.Header.Get(appcontext.HeaderDeviceType))
 	c.Request = c.Request.WithContext(ctx)
+	c.Header(HeaderRequestId, requestID)
 
 	c.Next()
 }
@@ -73,4 +82,28 @@ func (m *middleware) SetCors(c *gin.Context) gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func (m *middleware) CheckJWT(c *gin.Context) gin.HandlerFunc {
+	return m.checkJWT
+}
+
+func (m *middleware) checkJWT(c *gin.Context) {
+	header := c.Request.Header.Get("Authorization")
+	if header == "" {
+		m.response.Error(c, errors.Unauthorized("Token tidak valid"))
+		c.Abort()
+		return
+	}
+
+	header = header[len("Bearer "):]
+	tokenClaims, err := m.jwt.DecodeToken(header)
+	if err != nil {
+		m.response.Error(c, errors.Unauthorized("Token tidak valid"))
+		c.Abort()
+		return
+	}
+
+	c.Set("User", tokenClaims)
+	c.Next()
 }

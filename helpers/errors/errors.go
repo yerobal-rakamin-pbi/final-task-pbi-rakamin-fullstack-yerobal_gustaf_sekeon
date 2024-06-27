@@ -16,6 +16,7 @@ const (
 	InternalServerErrorType = "HTTPStatusInternalServerError"
 	BadRequestType          = "HTTPStatusBadRequest"
 	UnauthorizedType        = "HTTPStatusUnauthorized"
+	RequestTimeoutType      = "HTTPStatusRequestTimeout"
 )
 
 func (e *Errors) Error() string {
@@ -46,6 +47,10 @@ func BadRequest(message string) error {
 
 func Unauthorized(message string) error {
 	return NewWithCode(http.StatusUnauthorized, message, UnauthorizedType)
+}
+
+func RequestTimeout(message string) error {
+	return NewWithCode(http.StatusRequestTimeout, message, RequestTimeoutType)
 }
 
 func GetType(err error) string {

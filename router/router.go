@@ -8,6 +8,8 @@ import (
 	"rakamin-final-task/database"
 	swagger "rakamin-final-task/docs"
 	"rakamin-final-task/helpers/log"
+	"rakamin-final-task/helpers/response"
+	"rakamin-final-task/middlewares"
 
 	"context"
 	"fmt"
@@ -17,11 +19,14 @@ import (
 	"syscall"
 	"time"
 )
+
 type router struct {
-	config config.Application
-	http   *gin.Engine
-	db     *database.DB
-	log    log.LogInterface
+	config      config.Application
+	http        *gin.Engine
+	db          *database.DB
+	log         log.LogInterface
+	response    response.Interface
+	middlewares middlewares.Interface
 }
 
 func (r router) setupSwagger() {
@@ -46,6 +51,8 @@ func Init(
 		r.http = gin.New()
 		r.log = log
 		r.db = db
+		r.response = response.Init(log)
+		r.middlewares = middlewares.Init(config, r.http, r.response)
 
 		r.setupSwagger()
 		r.RegisterRoutes()
@@ -57,7 +64,6 @@ func Init(
 func (r router) RegisterRoutes() {
 	r.setupSwagger()
 
-	
 }
 
 func (r router) Run() {
