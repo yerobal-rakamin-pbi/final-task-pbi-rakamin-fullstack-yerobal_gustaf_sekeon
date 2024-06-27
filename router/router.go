@@ -2,13 +2,14 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	// swaggerFiles "github.com/swaggo/files"
-	// ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"rakamin-final-task/config"
 	"rakamin-final-task/database"
 	swagger "rakamin-final-task/docs"
 	"rakamin-final-task/helpers/log"
 	"rakamin-final-task/helpers/response"
+	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/middlewares"
 
 	"context"
@@ -55,15 +56,35 @@ func Init(
 		r.middlewares = middlewares.Init(config, r.http, r.response)
 
 		r.setupSwagger()
-		r.RegisterRoutes()
+		r.RegisterMiddlewaresAndRoutes()
 	})
 
 	return r
 }
 
-func (r router) RegisterRoutes() {
+func (r router) RegisterMiddlewaresAndRoutes() {
+	// Global middleware
+	r.http.Use(r.middlewares.SetCors())
+	r.http.Use(r.middlewares.SetTimeout)
+	r.http.Use(r.middlewares.AddFieldsToCtx)
+
 	r.setupSwagger()
 
+	// Global routes
+	r.http.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.http.GET("/ping", r.ping)
+
+
+	// 404 handler
+	r.http.NoRoute(r.notFoundHandler)
+}
+
+func (r router) ping(c *gin.Context) {
+	r.response.Success(c, "PONG!!!", nil, nil)
+}
+
+func (r router) notFoundHandler(c *gin.Context) {
+	r.response.Error(c, errors.NotFound("Endpoint not found"))
 }
 
 func (r router) Run() {

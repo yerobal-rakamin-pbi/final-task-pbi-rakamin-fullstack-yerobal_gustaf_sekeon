@@ -20,7 +20,7 @@ const (
 type Interface interface {
 	SetTimeout(c *gin.Context)
 	AddFieldsToCtx(c *gin.Context)
-	SetCors(c *gin.Context) gin.HandlerFunc
+	SetCors() gin.HandlerFunc
 	CheckJWT(c *gin.Context) gin.HandlerFunc
 }
 
@@ -67,7 +67,7 @@ func (m *middleware) AddFieldsToCtx(c *gin.Context) {
 	c.Next()
 }
 
-func (m *middleware) SetCors(c *gin.Context) gin.HandlerFunc {
+func (m *middleware) SetCors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
