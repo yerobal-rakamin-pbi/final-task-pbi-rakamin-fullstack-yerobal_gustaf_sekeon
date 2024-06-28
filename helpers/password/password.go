@@ -9,6 +9,6 @@ func Hash(password string, saltRound int64) (string, error) {
 	return string(bytes), err
 }
 
-func Compare(hashedPassword, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func Compare(hashedPassword, password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
 }

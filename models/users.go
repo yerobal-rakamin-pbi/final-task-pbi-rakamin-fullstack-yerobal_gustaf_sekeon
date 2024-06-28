@@ -28,6 +28,16 @@ type UserParams struct {
 	response.PaginationParam
 }
 
+type UserLoginParams struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserLoginResponse struct {
+	User Users  `json:"user"`
+	AcessToken string `json:"accessToken"`
+}
+
 type UserToken struct {
 	ID        int64          `gorm:"primaryKey" json:"id"`
 	CreatedAt int64          `json:"createdAt"`
