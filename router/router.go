@@ -5,11 +5,12 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"rakamin-final-task/config"
+	uc "rakamin-final-task/controllers/usecase"
 	"rakamin-final-task/database"
 	swagger "rakamin-final-task/docs"
+	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/log"
 	"rakamin-final-task/helpers/response"
-	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/middlewares"
 
 	"context"
@@ -28,32 +29,32 @@ type router struct {
 	log         log.LogInterface
 	response    response.Interface
 	middlewares middlewares.Interface
+	usecase     uc.Usecase
 }
 
-func (r router) setupSwagger() {
-	swagger.SwaggerInfo.Host = fmt.Sprintf("%s:%s", r.config.Server.Host, r.config.Server.Port)
-	swagger.SwaggerInfo.Schemes = []string{"https", "http"}
+type InitParam struct {
+	Config  config.Application
+	Log     log.LogInterface
+	DB      *database.DB
+	Usecase uc.Usecase
 }
 
 var once = sync.Once{}
 
-func Init(
-	config config.Application,
-	log log.LogInterface,
-	db *database.DB,
-) router {
+func Init(param InitParam) router {
 	r := router{}
 
 	// Initialize server with graceful shutdown
 	once.Do(func() {
 		gin.SetMode(gin.ReleaseMode)
 
-		r.config = config
+		r.config = param.Config
 		r.http = gin.New()
-		r.log = log
-		r.db = db
-		r.response = response.Init(log)
-		r.middlewares = middlewares.Init(config, r.http, r.response)
+		r.log = param.Log
+		r.db = param.DB
+		r.response = response.Init(r.log)
+		r.middlewares = middlewares.Init(r.config, r.http, r.response)
+		r.usecase = param.Usecase
 
 		r.setupSwagger()
 		r.RegisterMiddlewaresAndRoutes()
@@ -74,9 +75,16 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 	r.http.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.http.GET("/ping", r.ping)
 
+	// Auth routes
+	r.http.POST("/v1/users/login", r.Login)
 
 	// 404 handler
 	r.http.NoRoute(r.notFoundHandler)
+}
+
+func (r router) setupSwagger() {
+	swagger.SwaggerInfo.Host = fmt.Sprintf("%s:%s", r.config.Server.Host, r.config.Server.Port)
+	swagger.SwaggerInfo.Schemes = []string{"https", "http"}
 }
 
 // @Summary Health Check

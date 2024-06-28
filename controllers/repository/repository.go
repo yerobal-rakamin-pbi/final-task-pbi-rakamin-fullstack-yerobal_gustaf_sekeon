@@ -7,13 +7,13 @@ import (
 )
 
 type Repository struct {
-	User      userRepo.Interface
+	Users     userRepo.Interface
 	UserToken userTokenRepo.Interface
 }
 
 func Init(db *database.DB) Repository {
 	return Repository{
-		User:      userRepo.Init(db),
+		Users:     userRepo.Init(db),
 		UserToken: userTokenRepo.Init(db),
 	}
 }
