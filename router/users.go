@@ -14,7 +14,7 @@ import (
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
 // @Failure 500 {object} response.HTTPResponse{}
-// @Router v1/users/login [POST]
+// @Router /v1/users/login [POST]
 func (r *router) Login(c *gin.Context) {
 	var body models.UserLoginParams
 

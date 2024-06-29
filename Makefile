@@ -9,8 +9,8 @@ swag-init:
 
 .PHONY: build
 build:
-	@go build
+	@go build -o app ./app
 
 .PHONY: run
 run: swag-init build
-	@./app
+	@./app/app

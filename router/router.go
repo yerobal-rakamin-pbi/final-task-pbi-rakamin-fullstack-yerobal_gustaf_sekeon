@@ -84,7 +84,7 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 
 func (r router) setupSwagger() {
 	swagger.SwaggerInfo.Host = fmt.Sprintf("%s:%s", r.config.Server.Host, r.config.Server.Port)
-	swagger.SwaggerInfo.Schemes = []string{"https", "http"}
+	swagger.SwaggerInfo.Schemes = []string{"http", "https"}
 }
 
 // @Summary Health Check
