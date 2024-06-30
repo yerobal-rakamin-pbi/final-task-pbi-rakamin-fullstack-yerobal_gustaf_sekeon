@@ -150,6 +150,22 @@ func (u *users) CheckUserToken(ctx context.Context, token string) (string, bool)
 	return "", true
 }
 
+func (u *users) GetUserProfile(ctx context.Context) (models.Users, error) {
+	var res models.Users
+
+	userId := appcontext.GetUserID(ctx)
+	userParam := models.UserParams{
+		ID: userId,
+	}
+
+	userRes, err := u.user.Get(ctx, userParam)
+	if err != nil {
+		return res, err
+	}
+
+	return userRes, nil
+}
+
 func (u *users) UpdateUser(ctx context.Context, body models.UpdateUserParams, params models.UserParams) (models.Users, error) {
 	var res models.Users
 
