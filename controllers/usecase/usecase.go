@@ -5,6 +5,7 @@ import (
 	"rakamin-final-task/controllers/repository"
 	userUsecase "rakamin-final-task/controllers/usecase/users"
 	"rakamin-final-task/helpers/jwt"
+	"rakamin-final-task/helpers/storage"
 	"rakamin-final-task/helpers/validator"
 )
 
@@ -17,10 +18,18 @@ type InitParam struct {
 	ServerConf   config.Server
 	JwtLib       jwt.Interface
 	ValidatorLib validator.Interface
+	StorageLib   storage.Interface
 }
 
 func Init(param InitParam) Usecase {
+	userInitParam := userUsecase.InitParam{
+		UserRepo:      param.Repo.Users,
+		UserTokenRepo: param.Repo.UserToken,
+		Config:        param.ServerConf,
+		Jwt:           param.JwtLib,
+		Validator:     param.ValidatorLib,
+	}
 	return Usecase{
-		Users: userUsecase.Init(param.Repo.Users, param.Repo.UserToken, param.ServerConf, param.JwtLib, param.ValidatorLib),
+		Users: userUsecase.Init(userInitParam),
 	}
 }

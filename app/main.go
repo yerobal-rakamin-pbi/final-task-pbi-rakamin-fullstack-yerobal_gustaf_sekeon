@@ -12,6 +12,7 @@ import (
 	"rakamin-final-task/helpers/files"
 	"rakamin-final-task/helpers/jwt"
 	"rakamin-final-task/helpers/log"
+	"rakamin-final-task/helpers/storage"
 	"rakamin-final-task/helpers/validator"
 	"rakamin-final-task/router"
 )
@@ -59,6 +60,14 @@ func main() {
 	// Init Validator
 	validatorLib := validator.Init()
 
+	// Init Storage
+	gcpConfig := storage.GCPConfig{
+		ProjectID:   os.Getenv("GCP_PROJECT_ID"),
+		PrivateKey:  os.Getenv("GCP_PRIVATE_KEY"),
+		ClientEmail: os.Getenv("GCP_CLIENT_EMAIL"),
+	}
+	storageLib := storage.Init(gcpConfig, config.Storage.BucketName)
+
 	// Init DB Connection
 	db := database.Init(logger, config.SQL)
 	db.Migrate()
@@ -72,6 +81,7 @@ func main() {
 		ServerConf:   config.Server,
 		JwtLib:       jwtLib,
 		ValidatorLib: validatorLib,
+		StorageLib:   storageLib,
 	}
 	usecase := uc.Init(ucParam)
 

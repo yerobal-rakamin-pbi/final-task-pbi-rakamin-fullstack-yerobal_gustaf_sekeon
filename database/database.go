@@ -64,5 +64,5 @@ func initPostgres(dbLogger log.LogInterface, config config.SQL) (*gorm.DB, error
 func (db *DB) Migrate() {
 	db.ORM.AutoMigrate(&models.Users{})
 	db.ORM.AutoMigrate(&models.UserToken{})
-	db.ORM.AutoMigrate(&models.Photo{})
+	db.ORM.AutoMigrate(&models.Photos{})
 }

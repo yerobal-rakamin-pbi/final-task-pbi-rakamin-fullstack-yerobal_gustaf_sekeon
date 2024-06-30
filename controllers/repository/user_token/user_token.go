@@ -26,18 +26,18 @@ func Init(db *database.DB) Interface {
 func (u *userToken) Get(ctx context.Context, params models.UserTokenParams) (models.UserToken, error) {
 	var userToken models.UserToken
 
-	res := u.db.ORM.Where(params).First(&userToken)
-	if res.Error != nil {
+	res := u.db.ORM.WithContext(ctx).Where(params).First(&userToken)
+	if res.RowsAffected == 0 {
+		return userToken, errors.NotFound("User token not found")
+	} else if res.Error != nil {
 		return userToken, res.Error
-	} else if res.RowsAffected == 0 {
-		return userToken, errors.NotFound("Token not found")
 	}
 
 	return userToken, nil
 }
 
 func (u *userToken) Create(ctx context.Context, userToken models.UserToken) (models.UserToken, error) {
-	if err := u.db.ORM.Create(&userToken).Error; err != nil {
+	if err := u.db.ORM.WithContext(ctx).Create(&userToken).Error; err != nil {
 		return userToken, err
 	}
 
@@ -45,7 +45,7 @@ func (u *userToken) Create(ctx context.Context, userToken models.UserToken) (mod
 }
 
 func (u *userToken) Update(ctx context.Context, userToken models.UserToken, params models.UserTokenParams) (models.UserToken, error) {
-	if err := u.db.ORM.Model(models.UserToken{}).Where(params).Updates(&userToken).Error; err != nil {
+	if err := u.db.ORM.WithContext(ctx).Model(models.UserToken{}).Where(params).Updates(&userToken).Error; err != nil {
 		return userToken, err
 	}
 

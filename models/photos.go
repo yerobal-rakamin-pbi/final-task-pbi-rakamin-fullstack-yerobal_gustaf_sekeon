@@ -2,9 +2,10 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"rakamin-final-task/helpers/response"
 )
 
-type Photo struct {
+type Photos struct {
 	ID        int64          `gorm:"primaryKey" json:"id"`
 	CreatedAt int64          `json:"createdAt"`
 	UpdatedAt int64          `json:"updatedAt"`
@@ -17,4 +18,10 @@ type Photo struct {
 	Caption  string `gorm:"not null;type:text" json:"caption"`
 	PhotoURL string `gorm:"not null;type:text" json:"photoURL"`
 	UserID   int64  `gorm:"not null" json:"userID"`
+}
+
+type PhotoParams struct {
+	ID     int64 `json:"id" uri:"photo_id"`
+	UserID int64 `json:"userID" uri:"user_id"`
+	response.PaginationParam
 }

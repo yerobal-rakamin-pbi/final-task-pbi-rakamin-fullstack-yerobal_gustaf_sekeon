@@ -14,11 +14,11 @@ type Users struct {
 	UpdatedBy *int64         `json:"updatedBy"`
 	DeletedBy *int64         `json:"deletedBy"`
 
-	Username  string  `gorm:"not null;unique;type:varchar(255)" json:"username"`
-	Email     string  `gorm:"not null;unique;type:varchar(255)" json:"email"`
-	Password  string  `gorm:"not null;type:text" json:"-"`
-	IsActived *bool   `gorm:"default:true" json:"isActived"`
-	Photos    []Photo `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"photos"`
+	Username  string   `gorm:"not null;unique;type:varchar(255)" json:"username"`
+	Email     string   `gorm:"not null;unique;type:varchar(255)" json:"email"`
+	Password  string   `gorm:"not null;type:text" json:"-"`
+	IsActived *bool    `gorm:"default:true" json:"isActived"`
+	Photos    []Photos `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"photos"`
 }
 
 type UserParams struct {

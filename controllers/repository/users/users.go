@@ -14,30 +14,30 @@ type Interface interface {
 }
 
 type user struct {
-	db         *database.DB
+	db *database.DB
 }
 
 func Init(db *database.DB) Interface {
 	return &user{
-		db:         db,
+		db: db,
 	}
 }
 
 func (u *user) Get(ctx context.Context, params models.UserParams) (models.Users, error) {
 	var user models.Users
 
-	res := u.db.ORM.Where(params).First(&user)
-	if res.Error != nil {
-		return user, res.Error
-	} else if res.RowsAffected == 0 {
+	res := u.db.ORM.WithContext(ctx).Where(params).First(&user)
+	if res.RowsAffected == 0 {
 		return user, errors.NotFound("Email or username not found")
+	} else if res.Error != nil {
+		return user, res.Error
 	}
 
 	return user, nil
 }
 
 func (u *user) Create(ctx context.Context, user models.Users) (models.Users, error) {
-	if err := u.db.ORM.Create(&user).Error; err != nil {
+	if err := u.db.ORM.WithContext(ctx).Create(&user).Error; err != nil {
 		return user, err
 	}
 
@@ -45,7 +45,7 @@ func (u *user) Create(ctx context.Context, user models.Users) (models.Users, err
 }
 
 func (u *user) Update(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error) {
-	if err := u.db.ORM.Model(models.Users{}).Where(params).Updates(&user).Error; err != nil {
+	if err := u.db.ORM.WithContext(ctx).Model(models.Users{}).Where(params).Updates(&user).Error; err != nil {
 		return user, err
 	}
 
