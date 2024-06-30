@@ -5,14 +5,14 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-func (r *router) BindParam(ctx *gin.Context, param interface{}) error {
-	if err := ctx.ShouldBindUri(param); err != nil {
+func (r *router) BindParam(c *gin.Context, param interface{}) error {
+	if err := c.ShouldBindUri(param); err != nil {
 		return err
 	}
 
-	return ctx.ShouldBindWith(param, binding.Query)
+	return c.ShouldBindWith(param, binding.Query)
 }
 
-func (r *router) BindBody(ctx *gin.Context, body interface{}) error {
-	return ctx.ShouldBindWith(body, binding.Default(ctx.Request.Method, ctx.ContentType()))
+func (r *router) BindBody(c *gin.Context, body interface{}) error {
+	return c.ShouldBindWith(body, binding.Default(c.Request.Method, c.ContentType()))
 }

@@ -27,3 +27,16 @@ func (p *photos) Create(ctx context.Context, photo models.Photos) (models.Photos
 
 	return photo, nil
 }
+
+func (p *photos) Get(ctx context.Context, params models.PhotoParams) (models.Photos, error) {
+	var photo models.Photos
+
+	res := p.db.ORM.WithContext(ctx).Where(params).First(&photo)
+	if res.RowsAffected == 0 {
+		return photo, nil
+	} else if res.Error != nil {
+		return photo, res.Error
+	}
+
+	return photo, nil
+}
