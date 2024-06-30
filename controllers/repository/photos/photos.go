@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"rakamin-final-task/database"
+	"rakamin-final-task/helpers/response"
 	"rakamin-final-task/models"
 )
 
@@ -39,4 +40,25 @@ func (p *photos) Get(ctx context.Context, params models.PhotoParams) (models.Pho
 	}
 
 	return photo, nil
+}
+
+func (p *photos) GetList(ctx context.Context, params models.PhotoParams) ([]models.Photos, *response.PaginationParam, error) {
+	var photos []models.Photos
+
+	pg := response.PaginationParam{
+		Limit: params.Limit,
+		Page:  params.Page,
+	}
+	pg.SetDefaultPagination()
+
+	res := p.db.ORM.WithContext(ctx).Where(params).Offset(int(pg.Offset)).Limit(int(pg.Limit)).Find(&photos)
+	if res.RowsAffected == 0 {
+		return photos, &pg, nil
+	} else if res.Error != nil {
+		return photos, &pg, res.Error
+	}
+
+	pg.ProcessPagination(res.RowsAffected)
+
+	return photos, &pg, nil
 }
