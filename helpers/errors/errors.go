@@ -8,7 +8,7 @@ import (
 type Errors struct {
 	Type    string
 	Code    int64
-	Message string
+	Message interface{}
 }
 
 const (
@@ -17,13 +17,15 @@ const (
 	BadRequestType          = "HTTPStatusBadRequest"
 	UnauthorizedType        = "HTTPStatusUnauthorized"
 	RequestTimeoutType      = "HTTPStatusRequestTimeout"
+	UnprocessableEntityType = "HTTPStatusUnprocessableEntity"
+	ConflictType            = "HTTPStatusConflict"
 )
 
 func (e *Errors) Error() string {
-	return e.Message
+	return e.Message.(string)
 }
 
-func NewWithCode(code int64, message, errType string) error {
+func NewWithCode(code int64, message interface{}, errType string) error {
 	errors := &Errors{
 		Type:    errType,
 		Code:    code,
@@ -53,6 +55,14 @@ func RequestTimeout(message string) error {
 	return NewWithCode(http.StatusRequestTimeout, message, RequestTimeoutType)
 }
 
+func ValidationError(message interface{}) error {
+	return NewWithCode(http.StatusUnprocessableEntity, message, UnprocessableEntityType)
+}
+
+func Conflict(message string) error {
+	return NewWithCode(http.StatusConflict, message, ConflictType)
+}
+
 func GetType(err error) string {
 	if err == nil {
 		return "HTTPStatusOK"
@@ -77,7 +87,7 @@ func GetCode(err error) int64 {
 	return 500
 }
 
-func GetMessage(err error) string {
+func GetMessage(err error) interface{} {
 	if err == nil {
 		return "OK"
 	}

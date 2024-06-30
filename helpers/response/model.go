@@ -13,8 +13,8 @@ type HTTPResponse struct {
 }
 
 type ResponseMessage struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string      `json:"title"`
+	Description interface{} `json:"description"`
 }
 
 type Meta struct {

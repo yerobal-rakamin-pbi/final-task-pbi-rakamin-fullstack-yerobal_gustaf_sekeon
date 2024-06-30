@@ -29,17 +29,17 @@ type UserParams struct {
 }
 
 type UserLoginParams struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type UserRegisterParams struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
-type UserLoginResponse struct {
+type AuthResponse struct {
 	User       Users  `json:"user"`
 	AcessToken string `json:"accessToken"`
 }
