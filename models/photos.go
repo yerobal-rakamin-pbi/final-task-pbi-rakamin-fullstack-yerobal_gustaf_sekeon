@@ -25,3 +25,8 @@ type PhotoParams struct {
 	UserID int64 `json:"userID" uri:"user_id"`
 	response.PaginationParam
 }
+
+type CreatePhotoParams struct {
+	Title   string `json:"title" validate:"required"`
+	Caption string `json:"caption" validate:"required"`
+}
