@@ -62,3 +62,11 @@ func (p *photos) GetList(ctx context.Context, params models.PhotoParams) ([]mode
 
 	return photos, &pg, nil
 }
+
+func (p *photos) Update(ctx context.Context, photo models.Photos, params models.PhotoParams) (models.Photos, error) {
+	if err := p.db.ORM.WithContext(ctx).Model(models.Photos{}).Where(params).Updates(&photo).Error; err != nil {
+		return photo, err
+	}
+
+	return photo, nil
+}
