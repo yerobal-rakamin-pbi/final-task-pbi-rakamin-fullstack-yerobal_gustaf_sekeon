@@ -14,6 +14,7 @@ const (
 	userAgent        contextKey = "UserAgent"
 	requestStartTime contextKey = "RequestStartTime"
 	deviceType       contextKey = "DeviceType"
+	userID           contextKey = "UserID"
 
 	// Header keys
 	HeaderRequestId    = "x-request-id"
@@ -85,4 +86,17 @@ func GetDeviceType(ctx context.Context) string {
 	}
 
 	return platform
+}
+
+func SetUserID(ctx context.Context, uid int64) context.Context {
+	return context.WithValue(ctx, userID, uid)
+}
+
+func GetUserID(ctx context.Context) int64 {
+	uid, ok := ctx.Value(userID).(int64)
+	if !ok {
+		return 0
+	}
+
+	return uid
 }

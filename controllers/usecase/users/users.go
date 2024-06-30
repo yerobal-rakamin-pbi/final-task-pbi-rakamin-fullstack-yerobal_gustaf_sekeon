@@ -7,6 +7,7 @@ import (
 	"rakamin-final-task/config"
 	userTokenRepo "rakamin-final-task/controllers/repository/user_token"
 	userRepo "rakamin-final-task/controllers/repository/users"
+	"rakamin-final-task/helpers/appcontext"
 	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/jwt"
 	"rakamin-final-task/helpers/password"
@@ -17,6 +18,7 @@ import (
 type Interface interface {
 	Login(ctx context.Context, params models.UserLoginParams) (models.AuthResponse, error)
 	Register(ctx context.Context, params models.UserRegisterParams) (models.AuthResponse, error)
+	CheckUserToken(ctx context.Context, token string) (string, bool)
 	// GetUserProfile(ctx context.Context) (models.Users, error)
 	// UpdateUserProfile(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error)
 	// DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error)
@@ -124,4 +126,26 @@ func (u *users) Register(ctx context.Context, param models.UserRegisterParams) (
 	res.AcessToken = accessToken
 
 	return res, nil
+}
+
+func (u *users) CheckUserToken(ctx context.Context, token string) (string, bool) {
+	userID := appcontext.GetUserID(ctx)
+
+	userTokenParam := models.UserTokenParams{
+		UserID:      userID,
+		AccessToken: token,
+	}
+
+	userTokenRes, err := u.userToken.Get(ctx, userTokenParam)
+	if err != nil && strings.Contains(err.Error(), "record not found") {
+		return "token not found", false
+	} else if err != nil {
+		return err.Error(), false
+	}
+
+	if *userTokenRes.IsRevoked {
+		return "invalid token, token has been revoked", false
+	}
+
+	return "", true
 }

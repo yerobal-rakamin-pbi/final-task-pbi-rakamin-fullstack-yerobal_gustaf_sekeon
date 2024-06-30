@@ -61,7 +61,7 @@ func getFields(ctx context.Context, fields ...interface{}) logrus.Fields {
 		"request_id":      appcontext.GetRequestId(ctx),
 		"service_version": appcontext.GetServiceVersion(ctx),
 		"user_agent":      appcontext.GetUserAgent(ctx),
-		"user_id":         0,
+		"user_id":         appcontext.GetUserID(ctx),
 	}
 
 	if len(fields) > 0 {

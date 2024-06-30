@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"rakamin-final-task/config"
+	uc "rakamin-final-task/controllers/usecase"
 	"rakamin-final-task/helpers/appcontext"
 	"rakamin-final-task/helpers/errors"
 	jwtLib "rakamin-final-task/helpers/jwt"
@@ -29,15 +30,25 @@ type middleware struct {
 	http     *gin.Engine
 	jwt      jwtLib.Interface
 	response response.Interface
+	usecase  uc.Usecase
 }
 
-func Init(config config.Application, http *gin.Engine, response response.Interface) Interface {
-	jwt := jwtLib.Init(config.Server.JWT.ExpSec, config.Server.JWT.Secret)
+type InitParam struct {
+	Config   config.Application
+	Http     *gin.Engine
+	Response response.Interface
+	Usecase  uc.Usecase
+}
+
+func Init(param InitParam) Interface {
+	jwt := jwtLib.Init(param.Config.Server.JWT.ExpSec, param.Config.Server.JWT.Secret)
 
 	return &middleware{
-		http:   http,
-		config: config,
-		jwt:    jwt,
+		http:     param.Http,
+		config:   param.Config,
+		jwt:      jwt,
+		response: param.Response,
+		usecase:  param.Usecase,
 	}
 }
 
@@ -104,6 +115,16 @@ func (m *middleware) checkJWT(c *gin.Context) {
 		return
 	}
 
-	c.Set("User", tokenClaims)
+	ctx := c.Request.Context()
+	ctx = appcontext.SetUserID(ctx, int64(tokenClaims["id"].(float64)))
+
+	msg, isValid := m.usecase.Users.CheckUserToken(ctx, header)
+	if !isValid {
+		m.response.Error(c, errors.Unauthorized(msg))
+		c.Abort()
+		return
+	}
+
+	c.Request = c.Request.WithContext(ctx)
 	c.Next()
 }
