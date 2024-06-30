@@ -16,7 +16,13 @@
     "port": "5432",
     "database": "",
     "username": "",
-    "password": ""
+    "password": "",
+    "poolConfig": {
+      "maxIdle": 10,
+      "maxOpen": 100,
+      "connIdleSec": 300,
+      "connMaxLifetimeSec": 600
+    }
   },
   "storage": {
     "bucketName": ""

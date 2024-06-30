@@ -6,7 +6,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"rakamin-final-task/config"
 	uc "rakamin-final-task/controllers/usecase"
-	"rakamin-final-task/database"
 	swagger "rakamin-final-task/docs"
 	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/log"
@@ -25,7 +24,6 @@ import (
 type router struct {
 	config      config.Application
 	http        *gin.Engine
-	db          *database.DB
 	log         log.LogInterface
 	response    response.Interface
 	middlewares middlewares.Interface
@@ -35,7 +33,6 @@ type router struct {
 type InitParam struct {
 	Config  config.Application
 	Log     log.LogInterface
-	DB      *database.DB
 	Usecase uc.Usecase
 }
 
@@ -51,7 +48,6 @@ func Init(param InitParam) router {
 		r.config = param.Config
 		r.http = gin.New()
 		r.log = param.Log
-		r.db = param.DB
 		r.response = response.Init(r.log)
 		r.middlewares = middlewares.Init(r.config, r.http, r.response)
 		r.usecase = param.Usecase
@@ -110,7 +106,7 @@ func (r router) Run() {
 	ctx, stop := signal.NotifyContext(c, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	port := fmt.Sprintf(":8080")
+	port := ":8080"
 	if r.config.Server.Port != "" {
 		port = ":" + r.config.Server.Port
 	}

@@ -12,6 +12,7 @@ import (
 	"rakamin-final-task/helpers/files"
 	"rakamin-final-task/helpers/jwt"
 	"rakamin-final-task/helpers/log"
+	"rakamin-final-task/helpers/validator"
 	"rakamin-final-task/router"
 )
 
@@ -55,25 +56,22 @@ func main() {
 	// Init JWT
 	jwtLib := jwt.Init(config.Server.JWT.ExpSec, config.Server.JWT.Secret)
 
-	// Init DB Connection
-	dbConfig := database.Config{
-		Host:     config.SQL.Host,
-		Port:     config.SQL.Port,
-		Username: config.SQL.Username,
-		Password: config.SQL.Password,
-		Database: config.SQL.Database,
-	}
+	// Init Validator
+	validatorLib := validator.Init()
 
-	db := database.Init(logger, dbConfig)
+	// Init DB Connection
+	db := database.Init(logger, config.SQL)
+	db.Migrate()
 
 	// Init repository
 	repository := repo.Init(db)
 
 	// Init Usecase
 	ucParam := uc.InitParam{
-		Repo:       repository,
-		ServerConf: config.Server,
-		JwtLib:     jwtLib,
+		Repo:         repository,
+		ServerConf:   config.Server,
+		JwtLib:       jwtLib,
+		ValidatorLib: validatorLib,
 	}
 	usecase := uc.Init(ucParam)
 
@@ -81,7 +79,6 @@ func main() {
 	routerParam := router.InitParam{
 		Config:  config,
 		Log:     logger,
-		DB:      db,
 		Usecase: usecase,
 	}
 	router := router.Init(routerParam)

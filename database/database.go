@@ -1,37 +1,34 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"rakamin-final-task/config"
+	"rakamin-final-task/helpers/log"
+	"rakamin-final-task/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"rakamin-final-task/helpers/log"
 )
 
 type DB struct {
 	ORM    *gorm.DB
-	Config Config
+	Config config.SQL
 }
 
-type Config struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	Database string
-}
-
-func Init(dbLogger log.LogInterface, config Config) (*DB) {
+func Init(dbLogger log.LogInterface, config config.SQL) *DB {
 	orm, err := initPostgres(dbLogger, config)
 	if err != nil {
-		dbLogger.Fatal(nil, err.Error())
+		dbLogger.Fatal(context.Background(), err.Error())
+		panic(err)
 	}
 
 	return &DB{ORM: orm, Config: config}
 }
 
-func initPostgres(dbLogger log.LogInterface, config Config) (*gorm.DB, error) {
+func initPostgres(dbLogger log.LogInterface, config config.SQL) (*gorm.DB, error) {
 	dataSourceName := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta",
 		config.Host,
@@ -54,10 +51,18 @@ func initPostgres(dbLogger log.LogInterface, config Config) (*gorm.DB, error) {
 	}
 
 	// Pool configuration
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
-	sqlDB.SetConnMaxLifetime(10 * time.Minute)
+	sqlDB.SetMaxIdleConns(int(config.PoolConfig.MaxIdle))
+	sqlDB.SetMaxOpenConns(int(config.PoolConfig.MaxOpen))
+	sqlDB.SetConnMaxIdleTime(time.Duration(config.PoolConfig.ConnIdleSec) * time.Second)
+	sqlDB.SetConnMaxLifetime(time.Duration(config.PoolConfig.ConnMaxLifetimeSec) * time.Second)
+
+	
 
 	return db, nil
+}
+
+func (db *DB) Migrate() {
+	db.ORM.AutoMigrate(&models.Users{})
+	db.ORM.AutoMigrate(&models.UserToken{})
+	db.ORM.AutoMigrate(&models.Photo{})
 }

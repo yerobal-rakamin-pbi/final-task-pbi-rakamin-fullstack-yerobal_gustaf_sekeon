@@ -33,8 +33,14 @@ type UserLoginParams struct {
 	Password string `json:"password"`
 }
 
+type UserRegisterParams struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UserLoginResponse struct {
-	User Users  `json:"user"`
+	User       Users  `json:"user"`
 	AcessToken string `json:"accessToken"`
 }
 
@@ -47,8 +53,8 @@ type UserToken struct {
 	UpdatedBy *int64         `json:"updatedBy"`
 	DeletedBy *int64         `json:"deletedBy"`
 
-	UserID      int64  `gorm:"not null;index:user_id_access_token_idx;unique" json:"userID"`
-	AccessToken string `gorm:"not null;index:user_id_access_token_idx;unique;type:text" json:"accessToken"`
+	UserID      int64  `gorm:"not null;index:user_id_access_token_idx,unique" json:"userID"`
+	AccessToken string `gorm:"not null;index:user_id_access_token_idx,unique;type:text" json:"accessToken"`
 	IsRevoked   *bool  `gorm:"default:false" json:"isRevoked"`
 }
 

@@ -9,6 +9,7 @@ import (
 	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/jwt"
 	"rakamin-final-task/helpers/password"
+	"rakamin-final-task/helpers/validator"
 	"rakamin-final-task/models"
 )
 
@@ -25,14 +26,16 @@ type users struct {
 	userToken userTokenRepo.Interface
 	config    config.Server
 	jwt       jwt.Interface
+	validator validator.Interface
 }
 
-func Init(userRepo userRepo.Interface, userTokenRepo userTokenRepo.Interface, config config.Server, jwt jwt.Interface) Interface {
+func Init(userRepo userRepo.Interface, userTokenRepo userTokenRepo.Interface, config config.Server, jwt jwt.Interface, validator validator.Interface) Interface {
 	return &users{
 		user:      userRepo,
 		userToken: userTokenRepo,
 		config:    config,
 		jwt:       jwt,
+		validator: validator,
 	}
 }
 
