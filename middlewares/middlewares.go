@@ -22,7 +22,7 @@ type Interface interface {
 	SetTimeout(c *gin.Context)
 	AddFieldsToCtx(c *gin.Context)
 	SetCors() gin.HandlerFunc
-	CheckJWT(c *gin.Context) gin.HandlerFunc
+	CheckJWT() gin.HandlerFunc
 }
 
 type middleware struct {
@@ -95,7 +95,7 @@ func (m *middleware) SetCors() gin.HandlerFunc {
 	}
 }
 
-func (m *middleware) CheckJWT(c *gin.Context) gin.HandlerFunc {
+func (m *middleware) CheckJWT() gin.HandlerFunc {
 	return m.checkJWT
 }
 

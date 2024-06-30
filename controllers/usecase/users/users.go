@@ -20,8 +20,8 @@ type Interface interface {
 	Register(ctx context.Context, params models.UserRegisterParams) (models.AuthResponse, error)
 	CheckUserToken(ctx context.Context, token string) (string, bool)
 	UpdateUser(ctx context.Context, body models.UpdateUserParams, params models.UserParams) (models.Users, error)
-	// UpdateUserProfile(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error)
-	// DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error)
+	GetUserProfile(ctx context.Context) (models.Users, error)
+	DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error)
 }
 
 type users struct {

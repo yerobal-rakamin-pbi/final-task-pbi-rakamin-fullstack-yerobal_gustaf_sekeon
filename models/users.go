@@ -22,7 +22,7 @@ type Users struct {
 }
 
 type UserParams struct {
-	ID       int64  `json:"id"`
+	ID       int64  `json:"id" uri:"user_id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	response.PaginationParam

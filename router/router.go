@@ -79,8 +79,16 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 	r.http.GET("/ping", r.ping)
 
 	// Auth routes
-	r.http.POST("/v1/users/login", r.Login)
-	r.http.POST("/v1/users/register", r.Register)
+	r.http.POST("/users/login", r.Login)
+	r.http.POST("/users/register", r.Register)
+
+	// User routes
+	userRoutes := r.http.Group("users", r.middlewares.CheckJWT())
+	{
+		userRoutes.GET("/profile", r.GetUserProfile)
+		userRoutes.PUT("/:user_id", r.UpdateUser)
+		userRoutes.DELETE("/:user_id", r.DeactivateUser)
+	}
 
 	// 404 handler
 	r.http.NoRoute(r.notFoundHandler)
