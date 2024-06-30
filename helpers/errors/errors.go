@@ -19,6 +19,7 @@ const (
 	RequestTimeoutType      = "HTTPStatusRequestTimeout"
 	UnprocessableEntityType = "HTTPStatusUnprocessableEntity"
 	ConflictType            = "HTTPStatusConflict"
+	ForbiddenType           = "HTTPStatusForbidden"
 )
 
 func (e *Errors) Error() string {
@@ -61,6 +62,11 @@ func ValidationError(message interface{}) error {
 
 func Conflict(message string) error {
 	return NewWithCode(http.StatusConflict, message, ConflictType)
+}
+
+func Forbidden(message string) error {
+	return NewWithCode(http.StatusForbidden, message, ForbiddenType)
+
 }
 
 func GetType(err error) string {

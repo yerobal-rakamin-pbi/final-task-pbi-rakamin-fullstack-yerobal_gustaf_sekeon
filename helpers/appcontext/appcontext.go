@@ -15,6 +15,7 @@ const (
 	requestStartTime contextKey = "RequestStartTime"
 	deviceType       contextKey = "DeviceType"
 	userID           contextKey = "UserID"
+	userToken        contextKey = "UserToken"
 
 	// Header keys
 	HeaderRequestId    = "x-request-id"

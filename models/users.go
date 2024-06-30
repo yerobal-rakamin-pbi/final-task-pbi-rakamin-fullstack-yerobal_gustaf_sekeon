@@ -39,6 +39,12 @@ type UserRegisterParams struct {
 	Password string `json:"password" validate:"required,min=6"`
 }
 
+type UpdateUserParams struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password" validate:"min=6"`
+}
+
 type AuthResponse struct {
 	User       Users  `json:"user"`
 	AcessToken string `json:"accessToken"`

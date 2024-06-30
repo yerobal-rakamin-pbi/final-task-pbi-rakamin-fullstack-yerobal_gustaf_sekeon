@@ -124,7 +124,7 @@ func (m *middleware) checkJWT(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	
 	c.Request = c.Request.WithContext(ctx)
 	c.Next()
 }

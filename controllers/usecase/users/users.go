@@ -19,7 +19,7 @@ type Interface interface {
 	Login(ctx context.Context, params models.UserLoginParams) (models.AuthResponse, error)
 	Register(ctx context.Context, params models.UserRegisterParams) (models.AuthResponse, error)
 	CheckUserToken(ctx context.Context, token string) (string, bool)
-	// GetUserProfile(ctx context.Context) (models.Users, error)
+	UpdateUser(ctx context.Context, body models.UpdateUserParams, params models.UserParams) (models.Users, error)
 	// UpdateUserProfile(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error)
 	// DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error)
 }
@@ -148,4 +148,57 @@ func (u *users) CheckUserToken(ctx context.Context, token string) (string, bool)
 	}
 
 	return "", true
+}
+
+func (u *users) UpdateUser(ctx context.Context, body models.UpdateUserParams, params models.UserParams) (models.Users, error) {
+	var res models.Users
+
+	userId := appcontext.GetUserID(ctx)
+	if userId != params.ID {
+		return res, errors.Forbidden("You are not allowed to update this user")
+	}
+
+	if err := u.validator.ValidateStruct(body); err != nil {
+		return res, errors.ValidationError(u.validator.GetValidationErrors(err))
+	}
+
+	userParam := models.UserParams{
+		ID: userId,
+	}
+
+	userField := models.Users{
+		Username: body.Username,
+		Email:    body.Email,
+	}
+
+	if body.Password != "" {
+		hashedPassword, err := password.Hash(body.Password, u.config.Password.SaltRound)
+		if err != nil {
+			return res, err
+		}
+
+		userField.Password = hashedPassword
+	}
+
+	userRes, err := u.user.Update(ctx, userField, userParam)
+	if err != nil {
+		return res, err
+	}
+
+	if body.Password != "" {
+		userTokenParam := models.UserTokenParams{
+			UserID: userId,
+		}
+
+		userTokenField := models.UserToken{
+			IsRevoked: &[]bool{true}[0],
+		}
+
+		_, err = u.userToken.Update(ctx, userTokenField, userTokenParam)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	return userRes, nil
 }
