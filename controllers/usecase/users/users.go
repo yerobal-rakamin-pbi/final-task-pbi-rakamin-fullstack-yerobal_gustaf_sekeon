@@ -218,3 +218,40 @@ func (u *users) UpdateUser(ctx context.Context, body models.UpdateUserParams, pa
 
 	return userRes, nil
 }
+
+func (u *users) DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error) {
+	var res models.Users
+
+	userId := appcontext.GetUserID(ctx)
+	if userId != params.ID {
+		return res, errors.Forbidden("You are not allowed to deactivate this user")
+	}
+
+	userParam := models.UserParams{
+		ID: userId,
+	}
+
+	userField := models.Users{
+		IsActived: &[]bool{false}[0],
+	}
+
+	userRes, err := u.user.Update(ctx, userField, userParam)
+	if err != nil {
+		return res, err
+	}
+
+	userTokenParam := models.UserTokenParams{
+		UserID: userId,
+	}
+
+	userTokenField := models.UserToken{
+		IsRevoked: &[]bool{true}[0],
+	}
+
+	_, err = u.userToken.Update(ctx, userTokenField, userTokenParam)
+	if err != nil {
+		return res, err
+	}
+
+	return userRes, nil
+}
