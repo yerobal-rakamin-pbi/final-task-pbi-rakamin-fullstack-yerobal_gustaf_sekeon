@@ -73,6 +73,7 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 
 	// Auth routes
 	r.http.POST("/v1/users/login", r.Login)
+	r.http.POST("/v1/users/register", r.Register)
 
 	// 404 handler
 	r.http.NoRoute(r.notFoundHandler)

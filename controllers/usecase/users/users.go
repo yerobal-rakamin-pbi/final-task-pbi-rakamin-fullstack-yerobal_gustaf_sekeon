@@ -16,7 +16,7 @@ import (
 
 type Interface interface {
 	Login(ctx context.Context, params models.UserLoginParams) (models.AuthResponse, error)
-	// Register(ctx context.Context, user models.Users) (models.Users, error)
+	Register(ctx context.Context, params models.UserRegisterParams) (models.AuthResponse, error)
 	// GetUserProfile(ctx context.Context) (models.Users, error)
 	// UpdateUserProfile(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error)
 	// DeactivateUser(ctx context.Context, params models.UserParams) (models.Users, error)
