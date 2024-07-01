@@ -62,3 +62,34 @@ func (p *photos) Create(ctx context.Context, param models.CreatePhotoParams, pho
 
 	return photo, nil
 }
+
+func (p *photos) Get(ctx context.Context, param models.PhotoParams) (models.Photos, error) {
+	userID := appcontext.GetUserID(ctx)
+
+	photoParam := models.PhotoParams{
+		ID:     param.ID,
+		UserID: userID,
+	}
+
+	photo, err := p.photo.Get(ctx, photoParam)
+	if err != nil {
+		return photo, err
+	}
+
+	return photo, nil
+}
+
+func (p *photos) GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, error) {
+	userID := appcontext.GetUserID(ctx)
+
+	photoParam := models.PhotoParams{
+		UserID: userID,
+	}
+
+	photos, _, err := p.photo.GetList(ctx, photoParam)
+	if err != nil {
+		return photos, err
+	}
+
+	return photos, nil
+}
