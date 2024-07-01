@@ -93,3 +93,40 @@ func (p *photos) GetList(ctx context.Context, param models.PhotoParams) ([]model
 
 	return photos, nil
 }
+
+func (p *photos) Update(ctx context.Context, param models.PhotoParams, body models.UpdatePhotoParams) (models.Photos, error) {
+	var photo models.Photos
+
+	userID := appcontext.GetUserID(ctx)
+
+	photoParam := models.PhotoParams{
+		ID:     param.ID,
+		UserID: userID,
+	}
+
+	photo.Title = body.Title
+	photo.Caption = body.Caption
+
+	photo, err := p.photo.Update(ctx, photo, photoParam)
+	if err != nil {
+		return photo, err
+	}
+
+	return photo, nil
+}
+
+func (p *photos) Delete(ctx context.Context, param models.PhotoParams) error {
+	userID := appcontext.GetUserID(ctx)
+
+	photoParam := models.PhotoParams{
+		ID:     param.ID,
+		UserID: userID,
+	}
+
+	err := p.photo.Delete(ctx, photoParam)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
