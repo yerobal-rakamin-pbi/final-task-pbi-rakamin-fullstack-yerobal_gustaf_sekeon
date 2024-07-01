@@ -45,17 +45,17 @@ func Init(param InitParam) router {
 	once.Do(func() {
 		gin.SetMode(gin.ReleaseMode)
 
+		r.config = param.Config
+		r.http = gin.New()
+		r.log = param.Log
+		r.response = response.Init(r.log)
+
 		middlewareParam := middlewares.InitParam{
 			Config:   r.config,
 			Http:     r.http,
 			Response: r.response,
 			Usecase:  param.Usecase,
 		}
-
-		r.config = param.Config
-		r.http = gin.New()
-		r.log = param.Log
-		r.response = response.Init(r.log)
 		r.middlewares = middlewares.Init(middlewareParam)
 		r.usecase = param.Usecase
 

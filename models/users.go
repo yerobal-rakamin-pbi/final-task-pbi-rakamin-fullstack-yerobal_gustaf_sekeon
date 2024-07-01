@@ -18,7 +18,7 @@ type Users struct {
 	Email     string   `gorm:"not null;unique;type:varchar(255)" json:"email"`
 	Password  string   `gorm:"not null;type:text" json:"-"`
 	IsActived *bool    `gorm:"default:true" json:"isActived"`
-	Photos    []Photos `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"photos"`
+	Photos    []Photos `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 }
 
 type UserParams struct {

@@ -7,11 +7,11 @@ type Application struct {
 }
 
 type Server struct {
-	Port                 string   `json:"port"`
-	Host                 string   `json:"host"`
-	RequestTimeoutSecond int      `json:"requestTimeoutSecond"`
-	JWT                  JWT      `json:"jwt"`
-	Password             Password `json:"password"`
+	Port              string   `json:"port"`
+	Host              string   `json:"host"`
+	RequestTimeoutSec int64    `json:"requestTimeoutSec"`
+	JWT               JWT      `json:"jwt"`
+	Password          Password `json:"password"`
 }
 
 type JWT struct {

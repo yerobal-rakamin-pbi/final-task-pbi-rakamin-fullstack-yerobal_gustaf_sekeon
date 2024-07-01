@@ -54,7 +54,7 @@ func Init(param InitParam) Interface {
 
 // Timeout middleware wraps the request context with a timeout.
 func (m *middleware) SetTimeout(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(m.config.Server.RequestTimeoutSecond)*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(m.config.Server.RequestTimeoutSec) * time.Second)
 
 	// Cancel to clean up resources
 	defer cancel()
