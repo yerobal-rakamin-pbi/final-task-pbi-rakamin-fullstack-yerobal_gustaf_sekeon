@@ -6,7 +6,6 @@ import (
 	"time"
 
 	photoRepo "rakamin-final-task/controllers/repository/photos"
-	userRepo "rakamin-final-task/controllers/repository/users"
 	"rakamin-final-task/helpers/appcontext"
 	"rakamin-final-task/helpers/files"
 	"rakamin-final-task/helpers/storage"
@@ -14,17 +13,24 @@ import (
 )
 
 type Interface interface {
+	Create(ctx context.Context, param models.CreatePhotoParams, photoFile *files.File) (models.Photos, error)
+	Get(ctx context.Context, param models.PhotoParams) (models.Photos, error)
+	GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, error)
+	Update(ctx context.Context, param models.PhotoParams, body models.UpdatePhotoParams) (models.Photos, error)
+	Delete(ctx context.Context, param models.PhotoParams) error
 }
+
+const (
+	photoPath = "photos"
+)
 
 type photos struct {
 	photo   photoRepo.Interface
 	storage storage.Interface
-	user    userRepo.Interface
 }
 
 type InitParam struct {
 	PhotoRepo photoRepo.Interface
-	UserRepo  userRepo.Interface
 	Storage   storage.Interface
 }
 
@@ -32,7 +38,6 @@ func Init(param InitParam) Interface {
 	return &photos{
 		photo:   param.PhotoRepo,
 		storage: param.Storage,
-		user:    param.UserRepo,
 	}
 }
 
@@ -42,8 +47,8 @@ func (p *photos) Create(ctx context.Context, param models.CreatePhotoParams, pho
 	userID := appcontext.GetUserID(ctx)
 
 	// format: {userID}_{timestamp}
-	fileName := fmt.Sprintf("%d_%d", userID, time.Now().Unix())
-	photoURL, err := p.storage.Upload(ctx, photoFile, fileName)
+	photoFile.SetFileName(fmt.Sprintf("%d_%d", userID, time.Now().Unix()))
+	photoURL, err := p.storage.Upload(ctx, photoFile, photoPath)
 	if err != nil {
 		return photo, err
 	}
@@ -123,8 +128,14 @@ func (p *photos) Delete(ctx context.Context, param models.PhotoParams) error {
 		UserID: userID,
 	}
 
-	err := p.photo.Delete(ctx, photoParam)
+	photo, err := p.photo.Get(ctx, photoParam)
 	if err != nil {
+		return err
+	}
+
+	p.storage.Delete(ctx, photo.PhotoURL, photoPath)
+
+	if err := p.photo.Delete(ctx, photoParam); err != nil {
 		return err
 	}
 

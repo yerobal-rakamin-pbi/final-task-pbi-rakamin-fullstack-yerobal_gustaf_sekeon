@@ -20,13 +20,13 @@ type File struct {
 	Meta    *multipart.FileHeader
 }
 
-func Init(content multipart.File, meta *multipart.FileHeader, key string) (*File, error) {
+func Init(content multipart.File, meta *multipart.FileHeader) (*File) {
 	file := &File{
 		Content: content,
 		Meta:    meta,
 	}
 
-	return file, nil
+	return file
 }
 
 func (f *File) SetFileName(newName string) {

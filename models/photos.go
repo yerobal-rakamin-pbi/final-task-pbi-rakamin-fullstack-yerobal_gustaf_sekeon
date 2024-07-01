@@ -27,8 +27,8 @@ type PhotoParams struct {
 }
 
 type CreatePhotoParams struct {
-	Title   string `json:"title" validate:"required"`
-	Caption string `json:"caption" validate:"required"`
+	Title   string `json:"title" form:"title" validate:"required"`
+	Caption string `json:"caption" form:"caption" validate:"required"`
 }
 
 type UpdatePhotoParams struct {

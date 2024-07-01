@@ -37,7 +37,7 @@ func (r *router) Login(c *gin.Context) {
 // @Tags Users
 // @Produce json
 // @Param registerBody body models.UserRegisterParams true "Register Body"
-// @Success 200 {object} response.HTTPResponse{data=models.AuthResponse}
+// @Success 201 {object} response.HTTPResponse{data=models.AuthResponse}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
 // @Failure 409 {object} response.HTTPResponse{}
@@ -58,7 +58,7 @@ func (r *router) Register(c *gin.Context) {
 		return
 	}
 
-	r.response.Success(c, "Register successfull", userResponse, nil)
+	r.response.Created(c, "Register successfull", userResponse)
 }
 
 // @Summary Get User Profile

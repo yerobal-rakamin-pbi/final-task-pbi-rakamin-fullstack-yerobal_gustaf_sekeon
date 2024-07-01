@@ -62,7 +62,7 @@ func (s *storageLib) getObjectPlace(objectPath string) *storage.ObjectHandle {
 
 func (s *storageLib) Upload(ctx context.Context, file *files.File, path string) (string, error) {
 	var imageURL string
-	writer := s.getObjectPlace(path + "/" + file.Meta.Filename).NewWriter(ctx)
+	writer := s.getObjectPlace(fmt.Sprintf("%s/%s", path, file.Meta.Filename)).NewWriter(ctx)
 
 	if _, err := io.Copy(writer, file.Content); err != nil {
 		return imageURL, err
