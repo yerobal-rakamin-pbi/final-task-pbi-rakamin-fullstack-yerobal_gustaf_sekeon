@@ -90,6 +90,16 @@ func (r router) RegisterMiddlewaresAndRoutes() {
 		userRoutes.DELETE("/:user_id", r.DeactivateUser)
 	}
 
+	// Photo routes
+	photoRoutes := r.http.Group("photos", r.middlewares.CheckJWT())
+	{
+		photoRoutes.POST("", r.CreatePhoto)
+		photoRoutes.GET("", r.GetListPhoto)
+		photoRoutes.GET("/:photo_id", r.GetPhoto)
+		photoRoutes.PUT("/:photo_id", r.UpdatePhoto)
+		photoRoutes.DELETE("/:photo_id", r.DeletePhoto)
+	}
+
 	// 404 handler
 	r.http.NoRoute(r.notFoundHandler)
 }

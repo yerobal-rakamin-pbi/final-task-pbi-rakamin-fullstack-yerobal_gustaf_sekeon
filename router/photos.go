@@ -71,7 +71,7 @@ func (r *router) getPhotos(file multipart.File, meta *multipart.FileHeader) (*fi
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
 // @Failure 500 {object} response.HTTPResponse{}
-// @Router /photos/{id} [GET]
+// @Router /photos/{photo_id} [GET]
 func (r *router) GetPhoto(c *gin.Context) {
 	var photoParam models.PhotoParams
 	if err := r.BindParam(c, &photoParam); err != nil {
@@ -113,4 +113,63 @@ func (r *router) GetListPhoto(c *gin.Context) {
 	}
 
 	r.response.Success(c, "Get list photo successfull", photos, pg)
+}
+
+// @Summary Update Photo
+// @Description Update photo
+// @Tags Photos
+// @Produce json
+// @Param id path int true "Photo ID"
+// @Param photoBody body models.UpdatePhotoParams true "Update Body"
+// @Success 200 {object} response.HTTPResponse{data=models.Photos}
+// @Failure 400 {object} response.HTTPResponse{}
+// @Failure 404 {object} response.HTTPResponse{}
+// @Failure 500 {object} response.HTTPResponse{}
+// @Router /photos/{photo_id} [PUT]
+func (r *router) UpdatePhoto(c *gin.Context) {
+	var body models.UpdatePhotoParams
+	if err := r.BindBody(c, &body); err != nil {
+		r.response.Error(c, err)
+		return
+	}
+
+	var photoParam models.PhotoParams
+	if err := r.BindParam(c, &photoParam); err != nil {
+		r.response.Error(c, err)
+		return
+	}
+
+	photo, err := r.usecase.Photos.Update(c.Request.Context(), photoParam, body)
+	if err != nil {
+		r.response.Error(c, err)
+		return
+	}
+
+	r.response.Success(c, "Update photo successfull", photo, nil)
+}
+
+// @Summary Delete Photo
+// @Description Delete photo
+// @Tags Photos
+// @Produce json
+// @Param id path int true "Photo ID"
+// @Success 200 {object} response.HTTPResponse{data=models.Photos}
+// @Failure 400 {object} response.HTTPResponse{}
+// @Failure 404 {object} response.HTTPResponse{}
+// @Failure 500 {object} response.HTTPResponse{}
+// @Router /photos/{photo_id} [DELETE]
+func (r *router) DeletePhoto(c *gin.Context) {
+	var photoParam models.PhotoParams
+	if err := r.BindParam(c, &photoParam); err != nil {
+		r.response.Error(c, err)
+		return
+	}
+
+	err := r.usecase.Photos.Delete(c.Request.Context(), photoParam)
+	if err != nil {
+		r.response.Error(c, err)
+		return
+	}
+
+	r.response.Success(c, "Delete photo successfull", nil, nil)
 }
