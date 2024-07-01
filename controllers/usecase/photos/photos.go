@@ -8,6 +8,7 @@ import (
 	photoRepo "rakamin-final-task/controllers/repository/photos"
 	"rakamin-final-task/helpers/appcontext"
 	"rakamin-final-task/helpers/files"
+	"rakamin-final-task/helpers/response"
 	"rakamin-final-task/helpers/storage"
 	"rakamin-final-task/models"
 )
@@ -15,7 +16,7 @@ import (
 type Interface interface {
 	Create(ctx context.Context, param models.CreatePhotoParams, photoFile *files.File) (models.Photos, error)
 	Get(ctx context.Context, param models.PhotoParams) (models.Photos, error)
-	GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, error)
+	GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, *response.PaginationParam, error)
 	Update(ctx context.Context, param models.PhotoParams, body models.UpdatePhotoParams) (models.Photos, error)
 	Delete(ctx context.Context, param models.PhotoParams) error
 }
@@ -84,19 +85,19 @@ func (p *photos) Get(ctx context.Context, param models.PhotoParams) (models.Phot
 	return photo, nil
 }
 
-func (p *photos) GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, error) {
+func (p *photos) GetList(ctx context.Context, param models.PhotoParams) ([]models.Photos, *response.PaginationParam, error) {
 	userID := appcontext.GetUserID(ctx)
 
 	photoParam := models.PhotoParams{
 		UserID: userID,
 	}
 
-	photos, _, err := p.photo.GetList(ctx, photoParam)
+	photos, pg, err := p.photo.GetList(ctx, photoParam)
 	if err != nil {
-		return photos, err
+		return photos, pg, err
 	}
 
-	return photos, nil
+	return photos, pg, nil
 }
 
 func (p *photos) Update(ctx context.Context, param models.PhotoParams, body models.UpdatePhotoParams) (models.Photos, error) {
