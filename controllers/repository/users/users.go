@@ -45,8 +45,11 @@ func (u *user) Create(ctx context.Context, user models.Users) (models.Users, err
 }
 
 func (u *user) Update(ctx context.Context, user models.Users, params models.UserParams) (models.Users, error) {
-	if err := u.db.ORM.WithContext(ctx).Model(models.Users{}).Where(params).Updates(&user).Error; err != nil {
-		return user, err
+	res := u.db.ORM.WithContext(ctx).Model(models.Users{}).Where(params).Updates(&user)
+	if res.RowsAffected == 0 {
+		return user, errors.NotFound("User not found")
+	} else if res.Error != nil {
+		return user, res.Error
 	}
 
 	return user, nil

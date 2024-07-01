@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"rakamin-final-task/database"
+	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/response"
 	"rakamin-final-task/models"
 )
@@ -39,7 +40,7 @@ func (p *photos) Get(ctx context.Context, params models.PhotoParams) (models.Pho
 
 	res := p.db.ORM.WithContext(ctx).Where(params).First(&photo)
 	if res.RowsAffected == 0 {
-		return photo, nil
+		return photo, errors.NotFound("Photo not found")
 	} else if res.Error != nil {
 		return photo, res.Error
 	}
@@ -57,9 +58,7 @@ func (p *photos) GetList(ctx context.Context, params models.PhotoParams) ([]mode
 	pg.SetDefaultPagination()
 
 	res := p.db.ORM.WithContext(ctx).Where(params).Offset(int(pg.Offset)).Limit(int(pg.Limit)).Find(&photos)
-	if res.RowsAffected == 0 {
-		return photos, &pg, nil
-	} else if res.Error != nil {
+	if res.Error != nil {
 		return photos, &pg, res.Error
 	}
 
@@ -69,8 +68,11 @@ func (p *photos) GetList(ctx context.Context, params models.PhotoParams) ([]mode
 }
 
 func (p *photos) Update(ctx context.Context, photo models.Photos, params models.PhotoParams) (models.Photos, error) {
-	if err := p.db.ORM.WithContext(ctx).Model(models.Photos{}).Where(params).Updates(&photo).Error; err != nil {
-		return photo, err
+	res := p.db.ORM.WithContext(ctx).Model(models.Photos{}).Where(params).Updates(&photo)
+	if res.RowsAffected == 0 {
+		return photo, errors.NotFound("Photo not found")
+	} else if res.Error != nil {
+		return photo, res.Error
 	}
 
 	return photo, nil
@@ -78,7 +80,9 @@ func (p *photos) Update(ctx context.Context, photo models.Photos, params models.
 
 func (p *photos) Delete(ctx context.Context, params models.PhotoParams) error {
 	res := p.db.ORM.WithContext(ctx).Where(params).Delete(&models.Photos{})
-	if res.Error != nil {
+	if res.RowsAffected == 0 {
+		return errors.NotFound("Photo not found")
+	} else if res.Error != nil {
 		return res.Error
 	}
 

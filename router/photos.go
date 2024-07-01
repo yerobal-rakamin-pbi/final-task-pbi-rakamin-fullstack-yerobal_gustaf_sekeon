@@ -2,12 +2,11 @@ package router
 
 import (
 	"mime/multipart"
-	"rakamin-final-task/helpers/errors"
-	"rakamin-final-task/helpers/files"
-
-	"rakamin-final-task/models"
 
 	"github.com/gin-gonic/gin"
+	"rakamin-final-task/helpers/errors"
+	"rakamin-final-task/helpers/files"
+	"rakamin-final-task/models"
 )
 
 // @Summary Create Photo
@@ -67,7 +66,7 @@ func (r *router) getPhotos(file multipart.File, meta *multipart.FileHeader) (*fi
 // @Description Get photo
 // @Tags Photos
 // @Produce json
-// @Param id path int true "Photo ID"
+// @Param photo_id path int true "Photo ID"
 // @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}
@@ -122,7 +121,7 @@ func (r *router) GetListPhoto(c *gin.Context) {
 // @Description Update photo
 // @Tags Photos
 // @Produce json
-// @Param id path int true "Photo ID"
+// @Param photo_id path int true "Photo ID"
 // @Param photoBody body models.UpdatePhotoParams true "Update Body"
 // @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
@@ -156,7 +155,7 @@ func (r *router) UpdatePhoto(c *gin.Context) {
 // @Description Delete photo
 // @Tags Photos
 // @Produce json
-// @Param id path int true "Photo ID"
+// @Param photo_id path int true "Photo ID"
 // @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}

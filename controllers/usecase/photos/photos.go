@@ -89,7 +89,8 @@ func (p *photos) GetList(ctx context.Context, param models.PhotoParams) ([]model
 	userID := appcontext.GetUserID(ctx)
 
 	photoParam := models.PhotoParams{
-		UserID: userID,
+		UserID:          userID,
+		PaginationParam: param.PaginationParam,
 	}
 
 	photos, pg, err := p.photo.GetList(ctx, photoParam)

@@ -2,7 +2,9 @@ package user_token
 
 import (
 	"context"
+
 	"rakamin-final-task/database"
+	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/models"
 )
 
@@ -41,8 +43,11 @@ func (u *userToken) Create(ctx context.Context, userToken models.UserToken) (mod
 }
 
 func (u *userToken) Update(ctx context.Context, userToken models.UserToken, params models.UserTokenParams) (models.UserToken, error) {
-	if err := u.db.ORM.WithContext(ctx).Model(models.UserToken{}).Where(params).Updates(&userToken).Error; err != nil {
-		return userToken, err
+	res := u.db.ORM.WithContext(ctx).Model(models.UserToken{}).Where(params).Updates(&userToken)
+	if res.RowsAffected == 0 {
+		return userToken, errors.NotFound("User token not found")
+	} else if res.Error != nil {
+		return userToken, res.Error
 	}
 
 	return userToken, nil
