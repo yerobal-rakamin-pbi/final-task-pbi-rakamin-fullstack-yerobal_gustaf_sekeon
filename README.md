@@ -26,7 +26,7 @@ source .env
 
 Or if you do not want to run `source` command every time you start new shell session, you can add the content of `.env` file to the very bottom of your `.bashrc` or `.zshrc` file depending on your shell type.
 
-If you set your environment variables correctly, the configuration file should be generated when the application run for the first time. The configuration file will be created as `./config/config.json`. Then you can edit the configuration file to match your configuration like database configuration.
+If you set your environment variables correctly, the configuration file should be generated when the application run for the first time. The configuration file will be created as `./config/config.json`.
 
 ## How to Run the Application
 
@@ -42,7 +42,7 @@ After installing the swagger CLI, you can run the application by running the fol
 make run
 ```
 
-This will run the application in the development environment. You can access the API documentation by opening the following URL in your browser:
+This will run the application in the development environment. You might got an error if you run the application for the first time. If that happens, you can edit the `config/config.json` file and match the configuration with your local environment, and then try again. You can access the API documentation by opening the following URL in your browser:
 
 ```shell
 http://localhost:8080/docs/index.html
