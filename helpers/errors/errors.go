@@ -23,7 +23,12 @@ const (
 )
 
 func (e *Errors) Error() string {
-	return e.Message.(string)
+	switch e.Message.(type) {
+	case string:
+		return e.Message.(string)
+	default:
+		return "Validation error"
+	}
 }
 
 func NewWithCode(code int64, message interface{}, errType string) error {

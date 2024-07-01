@@ -18,6 +18,7 @@ import (
 // @Param caption formData string true "Caption"
 // @Param photo formData file true "Photo"
 // @Accept multipart/form-data
+// @Security BearerAuth
 // @Success 201 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
@@ -67,6 +68,7 @@ func (r *router) getPhotos(file multipart.File, meta *multipart.FileHeader) (*fi
 // @Tags Photos
 // @Produce json
 // @Param id path int true "Photo ID"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
@@ -94,6 +96,7 @@ func (r *router) GetPhoto(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page"
 // @Param limit query int false "Limit"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=[]models.Photos,meta=response.PaginationParam}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
@@ -121,6 +124,7 @@ func (r *router) GetListPhoto(c *gin.Context) {
 // @Produce json
 // @Param id path int true "Photo ID"
 // @Param photoBody body models.UpdatePhotoParams true "Update Body"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
@@ -153,6 +157,7 @@ func (r *router) UpdatePhoto(c *gin.Context) {
 // @Tags Photos
 // @Produce json
 // @Param id path int true "Photo ID"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Photos}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}

@@ -110,13 +110,14 @@ func (m *middleware) checkJWT(c *gin.Context) {
 	header = header[len("Bearer "):]
 	tokenClaims, err := m.jwt.DecodeToken(header)
 	if err != nil {
-		m.response.Error(c, errors.Unauthorized("Token tidak valid"))
+		m.response.Error(c, err)
 		c.Abort()
 		return
 	}
 
+	userData := tokenClaims["data"].(map[string]interface{})
 	ctx := c.Request.Context()
-	ctx = appcontext.SetUserID(ctx, int64(tokenClaims["id"].(float64)))
+	ctx = appcontext.SetUserID(ctx, int64(userData["id"].(float64)))
 
 	msg, isValid := m.usecase.Users.CheckUserToken(ctx, header)
 	if !isValid {

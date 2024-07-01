@@ -65,8 +65,10 @@ func (r *router) Register(c *gin.Context) {
 // @Description Get User Profile
 // @Tags Users
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Users}
 // @Failure 400 {object} response.HTTPResponse{}
+// @Failure 401 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
 // @Failure 500 {object} response.HTTPResponse{}
 // @Router /users/profile [GET]
@@ -86,6 +88,7 @@ func (r *router) GetUserProfile(c *gin.Context) {
 // @Produce json
 // @Param user_id path int true "User ID"
 // @Param updateBody body models.UpdateUserParams true "Update Body"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Users}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}
@@ -118,6 +121,7 @@ func (r *router) UpdateUser(c *gin.Context) {
 // @Tags Users
 // @Produce json
 // @Param user_id path int true "User ID"
+// @Security BearerAuth
 // @Success 200 {object} response.HTTPResponse{data=models.Users}
 // @Failure 400 {object} response.HTTPResponse{}
 // @Failure 404 {object} response.HTTPResponse{}

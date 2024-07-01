@@ -3,12 +3,11 @@ package user_token
 import (
 	"context"
 	"rakamin-final-task/database"
-	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/models"
 )
 
 type Interface interface {
-	Get(ctx context.Context, params models.UserTokenParams) (models.UserToken, error)
+	CheckTokenExist(ctx context.Context, params models.UserTokenParams) (int64, error)
 	Create(ctx context.Context, userToken models.UserToken) (models.UserToken, error)
 	Update(ctx context.Context, userToken models.UserToken, params models.UserTokenParams) (models.UserToken, error)
 }
@@ -23,17 +22,14 @@ func Init(db *database.DB) Interface {
 	}
 }
 
-func (u *userToken) Get(ctx context.Context, params models.UserTokenParams) (models.UserToken, error) {
-	var userToken models.UserToken
+func (u *userToken) CheckTokenExist(ctx context.Context, params models.UserTokenParams) (int64, error) {
+	var isExist int64
 
-	res := u.db.ORM.WithContext(ctx).Where(params).First(&userToken)
-	if res.RowsAffected == 0 {
-		return userToken, errors.NotFound("User token not found")
-	} else if res.Error != nil {
-		return userToken, res.Error
+	if err := u.db.ORM.WithContext(ctx).Model(models.UserToken{}).Where(params).Count(&isExist).Error; err != nil {
+		return 0, err
 	}
 
-	return userToken, nil
+	return isExist, nil
 }
 
 func (u *userToken) Create(ctx context.Context, userToken models.UserToken) (models.UserToken, error) {

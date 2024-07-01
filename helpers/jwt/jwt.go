@@ -3,8 +3,8 @@ package jwt
 import (
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"rakamin-final-task/helpers/errors"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type jwtLib struct {
@@ -48,12 +48,12 @@ func (j *jwtLib) DecodeToken(token string) (map[string]interface{}, error) {
 
 	claims, ok := decoded.Claims.(jwt.MapClaims)
 
-	if claims["exp"].(int64) < time.Now().Unix() {
-		return nil, errors.Unauthorized("Token expired")
+	if !ok {
+		return nil, errors.Unauthorized("Invalid token")
 	}
 
-	if !ok {
-		return nil, errors.InternalServerError("Failed to decode token")
+	if !claims.VerifyExpiresAt(time.Now().Unix(), true) {
+		return nil, errors.Unauthorized("Token has expired")
 	}
 
 	return claims, nil

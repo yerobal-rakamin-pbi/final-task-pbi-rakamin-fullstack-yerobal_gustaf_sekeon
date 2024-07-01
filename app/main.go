@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 
 	"rakamin-final-task/config"
 	repo "rakamin-final-task/controllers/repository"
@@ -87,7 +86,6 @@ func main() {
 	usecase := uc.Init(ucParam)
 
 	// Init Router
-	fmt.Printf("Config: %+v", config)
 	routerParam := router.InitParam{
 		Config:  config,
 		Log:     logger,

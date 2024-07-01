@@ -2,6 +2,7 @@ package validator
 
 import (
 	"fmt"
+	"strings"
 
 	validatorLib "github.com/go-playground/validator/v10"
 )
@@ -17,7 +18,7 @@ type ValidationError struct {
 
 type Interface interface {
 	ValidateStruct(data interface{}) error
-	GetValidationErrors(err error) []ValidationError
+	GetValidationErrors(err error) ([]ValidationError, string)
 }
 
 func Init() Interface {
@@ -28,15 +29,19 @@ func (v *validator) ValidateStruct(data interface{}) error {
 	return v.validatorLib.Struct(data)
 }
 
-func (v *validator) GetValidationErrors(err error) []ValidationError {
+func (v *validator) GetValidationErrors(err error) ([]ValidationError, string) {
 	var errors []ValidationError
-	for _, err := range err.(validatorLib.ValidationErrors) {
+	var errorList []string
+	for i, err := range err.(validatorLib.ValidationErrors) {
+		errorList = append(errorList, fmt.Sprintf("%d.%s", i+1, v.messageForTag(err)))
 		errors = append(errors, ValidationError{
 			Field:   err.Field(),
-			Message: v.messageForTag(err),
+			Message: errorList[i],
 		})
 	}
-	return errors
+
+	errorMsg := strings.Join(errorList, " ")
+	return errors, errorMsg
 }
 
 func (v *validator) messageForTag(err validatorLib.FieldError) string {

@@ -11,7 +11,6 @@ import (
 	"rakamin-final-task/helpers/errors"
 	"rakamin-final-task/helpers/jwt"
 	"rakamin-final-task/helpers/password"
-	"rakamin-final-task/helpers/storage"
 	"rakamin-final-task/helpers/validator"
 	"rakamin-final-task/models"
 )
@@ -31,7 +30,6 @@ type users struct {
 	config    config.Server
 	jwt       jwt.Interface
 	validator validator.Interface
-	storage   storage.Interface
 }
 
 type InitParam struct {
@@ -96,7 +94,8 @@ func (u *users) Register(ctx context.Context, param models.UserRegisterParams) (
 	var res models.AuthResponse
 
 	if err := u.validator.ValidateStruct(param); err != nil {
-		return res, errors.ValidationError(u.validator.GetValidationErrors(err))
+		validationErr, _ := u.validator.GetValidationErrors(err)
+		return res, errors.ValidationError(validationErr)
 	}
 
 	hashedPassword, err := password.Hash(param.Password, u.config.Password.SaltRound)
@@ -144,17 +143,12 @@ func (u *users) CheckUserToken(ctx context.Context, token string) (string, bool)
 	userTokenParam := models.UserTokenParams{
 		UserID:      userID,
 		AccessToken: token,
+		IsRevoked:   &[]bool{false}[0],
 	}
 
-	userTokenRes, err := u.userToken.Get(ctx, userTokenParam)
-	if err != nil && strings.Contains(err.Error(), "record not found") {
-		return "token not found", false
-	} else if err != nil {
-		return err.Error(), false
-	}
-
-	if *userTokenRes.IsRevoked {
-		return "invalid token, token has been revoked", false
+	userTokenRes, err := u.userToken.CheckTokenExist(ctx, userTokenParam)
+	if err != nil || userTokenRes == 0 {
+		return "Token is unauthorized", false
 	}
 
 	return "", true
@@ -185,7 +179,8 @@ func (u *users) UpdateUser(ctx context.Context, body models.UpdateUserParams, pa
 	}
 
 	if err := u.validator.ValidateStruct(body); err != nil {
-		return res, errors.ValidationError(u.validator.GetValidationErrors(err))
+		validationErr, _ := u.validator.GetValidationErrors(err)
+		return res, errors.ValidationError(validationErr)
 	}
 
 	userParam := models.UserParams{
@@ -197,33 +192,9 @@ func (u *users) UpdateUser(ctx context.Context, body models.UpdateUserParams, pa
 		Email:    body.Email,
 	}
 
-	if body.Password != "" {
-		hashedPassword, err := password.Hash(body.Password, u.config.Password.SaltRound)
-		if err != nil {
-			return res, err
-		}
-
-		userField.Password = hashedPassword
-	}
-
 	userRes, err := u.user.Update(ctx, userField, userParam)
 	if err != nil {
 		return res, err
-	}
-
-	if body.Password != "" {
-		userTokenParam := models.UserTokenParams{
-			UserID: userId,
-		}
-
-		userTokenField := models.UserToken{
-			IsRevoked: &[]bool{true}[0],
-		}
-
-		_, err = u.userToken.Update(ctx, userTokenField, userTokenParam)
-		if err != nil {
-			return res, err
-		}
 	}
 
 	return userRes, nil

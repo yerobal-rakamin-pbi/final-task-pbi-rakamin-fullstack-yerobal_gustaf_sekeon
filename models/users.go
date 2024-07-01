@@ -42,7 +42,6 @@ type UserRegisterParams struct {
 type UpdateUserParams struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
-	Password string `json:"password" validate:"min=6"`
 }
 
 type AuthResponse struct {
